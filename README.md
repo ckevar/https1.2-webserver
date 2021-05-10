@@ -5,7 +5,9 @@ this is an webserver for https using tlsv1.2 using openssl libraries
 ### First step:
 after running make, you are ready to go.
 ### Second Step:
-- go to sslkeys folder under server/.
-- type in terminal ˘˘chmod +x sslkeys/genkeys.sh˘˘ and it will generate public and private keys on the sslkeys folder
+- go to sslkeys folder under server/sslkeys
+- type in terminal ˘˘chmod +x genkeys.sh˘˘ 
+- type ˘˘./genkeys.sh˘˘, thiw will generate public and private keys
+- then run ˘˘sudo ./main˘˘ on server folder
 ## Reqs
 - openssl (libssl-dev)
