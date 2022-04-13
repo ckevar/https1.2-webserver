@@ -2,7 +2,11 @@
 #define WEB_SERVER_H
 
 #include "TcpListener.h"
+#include "HTTPParser.h"
 #include <string>
+
+#define HTTP_METHOD_INDEX 	0
+#define HTTP_RESOURCE_INDEX	1
 
 class WebServer : public TcpListener
 {
@@ -25,6 +29,7 @@ protected:
 
 private:
 	std::string contentType;
+	HTTPParser http;
 	// MIME Type genenrator
 	void MIMEType(std::string *rType);
 };

@@ -1,3 +1,4 @@
+
 #include <string>
 #include <istream>
 #include <sstream>
@@ -6,36 +7,42 @@
 #include <streambuf>
 #include <vector>
 #include <iterator>
+#include <cstring>
 
 #include "WebServer.h"
 
 // Handler for when a message is received from the client
-//void WebServer::onMessageReceived(int clientSocket, const char* msg, int length) {
 void WebServer::onMessageReceived(SSL *clientSocket, const char *msg, int length) {
 	// Parse out the client's request string e.g. GET /index.html HTTP/1.1
-	std::istringstream iss(msg);
-	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+	http.load((char *)msg);
+	http.parse();
+	/*
+	std::cout << "->Method " << http.RESTMethod << std::endl;
+	std::cout << "->Resource Length " << http.resource.size << std::endl;
+	std::cout << "->Resource " << http.resource.resource << std::endl;
+	std::cout << "->Content-Length " << http.ContentLength << std::endl;
+	std::cout << "->Content " << http.Content << std::endl;
+	*/
+
 
 	// Some defaults for output to the client (404 file not found 'page')
 	std::string content = "<h1>404 Not Found</h1>";
-	std::string requestedFile = "/index.html";
+	std::string requestedFile = "/notfound.html";
 	contentType = "text/html";
 	int errorCode = 404;
 	// If the GET request is valid, try and get the name
-	std::cout << msg << std::endl;
-	if (parsed.size() >= 3 && parsed[0] == "GET") {
+	// std::cout << msg << std::endl;
+	if (http.RESTMethod == HTTP_METHOD_GET) {
 
-		requestedFile = parsed[1];
-		std::cout << parsed[6] << " asks for " << parsed[1] << std::endl; 
-		// If the file is just a slash, use index.html. This should really
-		// be if it _ends_ in a slash. I'll leave that for you :)
-		if (requestedFile == "/")
+		if (memcmp(http.resource.resource, "/ ", 2) == 0)
 			requestedFile = "/index.html";
-
 		MIMEType(&requestedFile);
 
+	} else if (http.RESTMethod == HTTP_METHOD_POST){
+		if (memcmp(http.resource.resource, "/ ", 2) == 0)
+			std::cout << "content " << http.Content << std::endl;
 	}
-	
+
 	std::ostringstream oss;
 
 	// Open the document in the local file system
@@ -76,26 +83,25 @@ void WebServer::onClientDisconnected(int clientSocket) {
 
 void WebServer::MIMEType(std::string *rType) {
 	int idx = rType->size();
-	while (rType->at(idx - 1) != '.') idx--; 
+	while (rType->at(idx - 1) != '.') idx--;
 	std::string mimetype = rType->substr(idx);
 
 	if (mimetype == "html")
 		contentType = "text/html";
-	
-	else if (mimetype == "js") 
+
+	else if (mimetype == "js")
 		contentType = "text/javascript";
 
-	else if (mimetype == "css") 
+	else if (mimetype == "css")
 		contentType = "text/css";
 
-	else if (mimetype == "jpeg" || mimetype == "jpg") 
+	else if (mimetype == "jpeg" || mimetype == "jpg")
 		contentType = "image/jpeg";
-	
-	else if (mimetype == "png") 
+
+	else if (mimetype == "png")
 		contentType = "image/png";
 
 	else if (mimetype == "mp4")
 		contentType = "video/mp4";
 
 }
-
