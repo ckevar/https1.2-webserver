@@ -10,7 +10,7 @@ cd https-webserver/server/sslkeys
 nano (or vim) genkeys.ssh # On company/CN=, modify it by using your public IP or you CN name```
 chmod +x genkeys.sh
 ./genkeys.sh #this will generate public and private keys
-cd ../˘˘, server folder
+cd ../ # server folder
 sudo ./main
 ```
 ## Reqs
